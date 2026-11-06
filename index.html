@@ -3,128 +3,167 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>ستوديو المونتاج PRO</title>
+<title>ستوديو PRO V3</title>
 <script src="https://cdn.tailwindcss.com"></script>
-<style>body{font-family:system-ui;background:#0b0b0f;color:white}.thumb{width:100%;height:110px;object-fit:cover;border-radius:10px}</style>
+<style>body{font-family:system-ui;background:#08080c;color:#fff}.thumb{width:100%;height:110px;object-fit:cover;border-radius:10px}</style>
 </head>
 <body class="p-4 max-w-2xl mx-auto">
-<h1 class="text-2xl font-black text-center">ستوديو مونتاج PRO</h1>
-<p class="text-center text-zinc-400 text-sm mb-4">إنتاج تلقائي - الصوت يظبط المشهد لوحده</p>
+<h1 class="text-2xl font-black text-center">ستوديو مونتاج <span class="text-pink-500">PRO V3</span></h1>
+<p class="text-center text-zinc-400 text-sm mb-4">نص كامل - صوت واضح - مؤثرات سينما</p>
 
 <div class="bg-zinc-900 p-4 rounded-2xl">
-<p class="font-bold mb-2">1. ارفع 8 صور</p>
-<input type="file" id="files" multiple accept="image/*" class="w-full bg-zinc-800 p-2 rounded-xl">
+<p class="font-bold">1. ارفع 8 صور</p>
+<input type="file" id="files" multiple accept="image/*" class="w-full bg-zinc-800 p-2 rounded-xl mt-2">
 <div id="gallery" class="grid grid-cols-4 gap-2 mt-3"></div>
 <p id="imgCount" class="text-xs text-yellow-300 mt-2">لسه ما رفعت صور</p>
 </div>
 
 <div class="bg-zinc-900 p-4 rounded-2xl mt-3">
-<p class="font-bold mb-2">2. السيناريو</p>
-<textarea id="script" rows="6" placeholder="الصق قصتك هنا..." class="w-full bg-zinc-800 p-3 rounded-xl outline-none text-sm"></textarea>
-<button onclick="splitScript()" class="w-full bg-pink-600 p-3 rounded-xl font-bold mt-2">وزع السيناريو تلقائيا</button>
+<p class="font-bold">2. السيناريو - كل سطر = مشهد كامل</p>
+<textarea id="script" rows="8" placeholder="الصق القصة هنا... كل سطر لحاله" class="w-full bg-zinc-800 p-3 rounded-xl outline-none text-sm mt-2"></textarea>
+<button onclick="splitScript()" class="w-full bg-pink-600 p-3 rounded-xl font-bold mt-2">وزع السيناريو - بدون قص</button>
 </div>
 
 <div id="scenes" class="mt-3 space-y-3"></div>
 
 <div class="bg-zinc-900 p-4 rounded-2xl mt-3">
-<p class="font-bold">3. الإنتاج</p>
-<label class="text-sm">ستايل المؤثرات:</label>
+<p class="font-bold">3. الصوت والمؤثرات</p>
+<label class="text-sm block mt-2">اختر صوت الراوي:</label>
+<select id="voiceSelect" class="w-full bg-zinc-800 p-2 rounded-lg mt-1"></select>
+<label class="text-sm block mt-3">نبرة الصوت:</label>
+<select id="pitch" class="w-full bg-zinc-800 p-2 rounded-lg mt-1">
+<option value="0.8">عميق - رعب</option>
+<option value="1" selected>طبيعي - واضح</option>
+<option value="1.2">حماسي</option>
+</select>
+<label class="text-sm block mt-3">ستايل المؤثرات:</label>
 <select id="effect" class="w-full bg-zinc-800 p-2 rounded-lg mt-1">
-<option value="cinematic">سينمائي - زوم هادي + تدرج</option>
-<option value="horror">رعب - اهتزاز + فلاش + ظلام</option>
-<option value="glitch">جليتش - حماسي سريع</option>
+<option value="cinematic">سينمائي - زوم ناعم + Fade + إطار</option>
+<option value="horror">رعب - ظلام + اهتزاز خفيف + فلاش</option>
+<option value="epic">ملحمي - زوم سريع + وميض نور</option>
 </select>
-<label class="text-sm block mt-3">صوت الراوي:</label>
-<select id="voiceSpeed" class="w-full bg-zinc-800 p-2 rounded-lg mt-1">
-<option value="0.9">درامي بطيء - للرعب</option>
-<option value="1">عادي</option>
-<option value="1.15">حماسي</option>
-</select>
-<label class="flex items-center gap-2 mt-3 text-sm"><input type="checkbox" id="music" checked> موسيقى خلفية درامية</label>
-<button onclick="makeVideo()" class="w-full bg-green-500 text-black p-4 rounded-xl font-black mt-3 text-lg">🎬 اصنع الفيديو - مزامنة تلقائية</button>
-<p id="status" class="text-center text-xs mt-2 text-yellow-300"></p>
-<p class="text-center text-[11px] text-zinc-500 mt-1">المدة تتحدد تلقائيا من طول الصوت، لا تحط ثواني</p>
+<button onclick="makeVideo()" class="w-full bg-green-500 text-black p-4 rounded-xl font-black mt-4 text-lg">🎬 اصنع الفيديو الاحترافي</button>
+<p id="status" class="text-center text-xs mt-2 text-yellow-300 leading-5"></p>
+<div class="bg-zinc-800 rounded-full h-2 mt-2 overflow-hidden"><div id="progress" class="bg-pink-500 h-2" style="width:0%"></div></div>
 </div>
 
 <canvas id="canvas" width="720" height="1280" class="w-full rounded-2xl mt-4 bg-black"></canvas>
-<video id="preview" controls class="w-full mt-3 rounded-xl hidden"></video>
-<a id="download" class="hidden block text-center bg-white text-black p-3 rounded-xl font-bold mt-2">⬇️ تحميل الفيديو للتيك توك</a>
+<video id="preview" controls playsinline class="w-full mt-3 rounded-xl hidden"></video>
+<a id="download" class="hidden block text-center bg-white text-black p-3 rounded-xl font-bold mt-2"></a>
+<p id="convertTip" class="hidden text-center text-xs text-zinc-400 mt-2 leading-5">لو جوالك ما فتح الفيديو: افتح CapCut > New Project > اختر الفيديو > Export MP4 > ارفعه تيك توك. دي طريقة المحترفين.</p>
 
 <script>
-let images=[], scenesData=[];
+let images=[], scenesData=[], voices=[];
+function loadVoices(){ voices=speechSynthesis.getVoices().filter(v=>v.lang.startsWith('ar')); if(!voices.length) voices=speechSynthesis.getVoices(); let sel=document.getElementById('voiceSelect'); sel.innerHTML=''; voices.forEach((v,i)=>{ let o=document.createElement('option'); o.value=i; o.text=(v.name+' - '+v.lang); sel.appendChild(o); }); if(!voices.length) sel.innerHTML='<option>جاري تحميل الأصوات... أعد فتح الصفحة</option>'; }
+speechSynthesis.onvoiceschanged=loadVoices; loadVoices();
+setTimeout(loadVoices,1000);
+
 document.getElementById('files').addEventListener('change', function(e){
 let files=Array.from(e.target.files).slice(0,8); images=[]; document.getElementById('gallery').innerHTML='';
-files.forEach(function(f,idx){
-let r=new FileReader(); r.onload=function(ev){ images[idx]=ev.target.result; document.getElementById('gallery').innerHTML+='<img src="'+ev.target.result+'" class="thumb">'; document.getElementById('imgCount').innerText='تم رفع '+images.filter(Boolean).length+' / 8 صور'; }; r.readAsDataURL(f);
+files.forEach(function(f,idx){ let r=new FileReader(); r.onload=function(ev){ images[idx]=ev.target.result; document.getElementById('gallery').innerHTML+='<img src="'+ev.target.result+'" class="thumb">'; document.getElementById('imgCount').innerText='تم رفع '+images.filter(Boolean).length+' / 8 صور'; }; r.readAsDataURL(f); });
 });
-});
+
 function splitScript(){
 let full=document.getElementById('script').value.trim(); if(!full){alert('اكتب السيناريو');return;}
 if(!images.length){alert('ارفع الصور أولا');return;}
-let parts=full.split(/[.!؟\n]+/).filter(function(s){return s.trim().length>3;});
-while(parts.length<images.length) parts.push(parts[parts.length-1]||'تابع...');
-scenesData=images.map(function(img,i){return {img:img,text:parts[i]?parts[i].trim():'المشهد '+(i+1)};});
-document.getElementById('scenes').innerHTML=scenesData.map(function(s,i){return '<div class="bg-zinc-900 p-3 rounded-2xl"><img src="'+s.img+'" class="thumb"><textarea oninput="scenesData['+i+'].text=this.value" class="w-full bg-zinc-800 p-2 rounded-lg mt-2 text-sm">'+s.text+'</textarea><p class="text-xs text-zinc-500">المشهد '+(i+1)+' - مدته تتحدد من صوته تلقائيا</p></div>';}).join('');
-document.getElementById('status').innerText='تم التوزيع! المدة الآن تلقائية';
+// الحل الجديد: نقسم بالسطر فقط، مش بالنقطة، عشان النص ما يتقطع
+let parts=full.split('\n').map(s=>s.trim()).filter(s=>s.length>2);
+while(parts.length<images.length) parts.push(parts[parts.length-1]);
+scenesData=images.map((img,i)=>{ return {img:img, text: parts[i]||('المشهد '+(i+1))}; });
+document.getElementById('scenes').innerHTML=scenesData.map((s,i)=>'<div class="bg-zinc-900 p-3 rounded-2xl"><img src="'+s.img+'" class="thumb"><textarea oninput="scenesData['+i+'].text=this.value" rows="2" class="w-full bg-zinc-800 p-2 rounded-lg mt-2 text-sm">'+s.text+'</textarea><p class="text-xs text-green-400">المشهد '+(i+1)+' - نص كامل، بدون قص</p></div>').join('');
+document.getElementById('status').innerText='تم! كل مشهد نصه كامل، عدل براحتك';
 }
+
 function wrapText(ctx,text,x,y,maxW,lineH){
-let words=text.split(' '),line='',lines=[];
-for(let w of words){ let t=line+w+' '; if(ctx.measureText(t).width>maxW){lines.push(line);line=w+' ';}else{line=t;} } lines.push(line);
-lines.forEach(function(l,i){ctx.fillText(l,x,y+i*lineH);});
+let words=text.split(' '), line='', lines=[];
+for(let w of words){ let t=line+w+' '; if(ctx.measureText(t).width>maxW){lines.push(line); line=w+' ';} else line=t; } lines.push(line);
+lines.forEach((l,i)=>ctx.fillText(l,x,y+i*lineH));
+return lines.length;
 }
-function speak(text){
-return new Promise(function(res){
-try{ speechSynthesis.cancel(); let u=new SpeechSynthesisUtterance(text); u.lang='ar-SA'; u.rate=parseFloat(document.getElementById('voiceSpeed').value); u.onend=res; u.onerror=res; speechSynthesis.speak(u); setTimeout(res,12000); }catch(e){res();}
+
+function speakFull(text){
+return new Promise((res)=>{
+try{
+speechSynthesis.cancel();
+let u=new SpeechSynthesisUtterance(text);
+u.lang='ar-SA';
+let idx=parseInt(document.getElementById('voiceSelect').value||0);
+if(voices[idx]){ u.voice=voices[idx]; u.lang=voices[idx].lang; }
+u.pitch=parseFloat(document.getElementById('pitch').value||1);
+u.rate=0.95; // أبطأ شوية عشان الوضوح
+u.onend=()=>res(); u.onerror=()=>res();
+speechSynthesis.speak(u);
+// أمان: لو الصوت طول، نستنى لحد 25 ثانية مش 6
+let est=Math.max(4000, text.length*90);
+setTimeout(res, est+3000);
+}catch(e){ res(); }
 });
 }
+
 async function makeVideo(){
 if(!scenesData.length){alert('وزع السيناريو أولا');return;}
 let canvas=document.getElementById('canvas'), ctx=canvas.getContext('2d');
 let stream=canvas.captureStream(30);
 let mime='';
-if(MediaRecorder.isTypeSupported('video/mp4')) mime='video/mp4';
-else if(MediaRecorder.isTypeSupported('video/webm;codecs=vp9')) mime='video/webm;codecs=vp9';
+if(MediaRecorder.isTypeSupported('video/webm;codecs=vp9')) mime='video/webm;codecs=vp9';
 else mime='video/webm';
 let rec=new MediaRecorder(stream,{mimeType:mime}); let chunks=[];
-rec.ondataavailable=function(e){if(e.data.size>0)chunks.push(e.data);};
-rec.onstop=function(){
-let ext=mime.includes('mp4')?'mp4':'webm';
+rec.ondataavailable=e=>{if(e.data.size>0)chunks.push(e.data);};
+rec.onstop=()=>{
 let blob=new Blob(chunks,{type:mime}); let url=URL.createObjectURL(blob);
 let v=document.getElementById('preview'); v.src=url; v.classList.remove('hidden');
-let d=document.getElementById('download'); d.href=url; d.download='tiktok-video.'+ext; d.classList.remove('hidden'); d.innerText='⬇️ تحميل الفيديو للتيك توك ('+ext.toUpperCase()+')';
-document.getElementById('status').innerText='تم! حمل وارفع تيك توك على طول';
+let d=document.getElementById('download'); d.href=url; d.download='tiktok-pro.webm'; d.classList.remove('hidden'); d.innerText='⬇️ تحميل الفيديو - جاهز للتيك توك';
+document.getElementById('convertTip').classList.remove('hidden');
+document.getElementById('status').innerText='تم! اسمعه كامل، لو عجبك حمله وارفعه';
+document.getElementById('progress').style.width='100%';
 };
 rec.start();
 let effect=document.getElementById('effect').value;
-document.getElementById('status').innerText='جاري الإنتاج... لا تطلع من الصفحة';
-for(let s of scenesData){
-let img=new Image(); img.src=s.img; await new Promise(function(r){img.onload=r;img.onerror=r;});
-document.getElementById('status').innerText='ينتج الآن: '+s.text.substring(0,30)+'...';
-let speakPromise=speak(s.text);
-let start=Date.now(); let done=false; speakPromise.then(function(){done=true;});
-let minTime=2500;
+for(let si=0; si<scenesData.length; si++){
+let s=scenesData[si];
+let img=new Image(); img.src=s.img; await new Promise(r=>{img.onload=r; img.onerror=r;});
+document.getElementById('status').innerText='ينتج الآن المشهد '+(si+1)+' / '+scenesData.length+' : '+s.text.substring(0,40)+'...';
+document.getElementById('progress').style.width=Math.round(si/scenesData.length*100)+'%';
+let speakP=speakFull(s.text);
+let start=Date.now(); let done=false; speakP.then(()=>{done=true;});
+let minTime=3000;
 while(!done || Date.now()-start<minTime){
-let p=((Date.now()-start)/1000)%4;
-let zoom=1+p*0.04;
+let elapsed=Date.now()-start;
+let totalEst=Math.max(minTime, s.text.length*90);
+let p=Math.min(1, elapsed/totalEst);
+// Fade دخول وخروج
+let alpha=1;
+if(elapsed<500) alpha=elapsed/500;
+if(done && elapsed>totalEst-500) alpha=Math.max(0,(totalEst-elapsed)/500);
+let zoom=1 + p*0.12;
 let shake=0;
-if(effect==='horror') shake=Math.random()*8-4;
-if(effect==='glitch') shake=Math.random()*14-7;
-let w=720*zoom,h=1280*zoom;
-ctx.fillStyle='black'; ctx.fillRect(0,0,720,1280);
+if(effect==='horror') shake=Math.sin(elapsed/40)*2;
+if(effect==='epic') shake=Math.sin(elapsed/30)*1;
+let w=720*zoom, h=1280*zoom;
+ctx.globalAlpha=1; ctx.fillStyle='black'; ctx.fillRect(0,0,720,1280);
+ctx.save(); ctx.globalAlpha=alpha;
 try{ ctx.drawImage(img, -(w-720)/2+shake, -(h-1280)/2+shake, w, h); }catch(e){}
-if(effect==='horror'){ ctx.fillStyle='rgba(0,0,0,'+(0.35+Math.random()*0.15)+')'; } else { ctx.fillStyle='rgba(0,0,0,0.25)'; }
-ctx.fillRect(0,0,720,1280);
-if(effect==='glitch' && Math.random()>0.92){ ctx.fillStyle='rgba(255,0,80,0.4)'; ctx.fillRect(0,Math.random()*1280,720,20); }
-ctx.fillStyle='rgba(0,0,0,0.6)'; ctx.fillRect(0,880,720,400);
-ctx.fillStyle='white'; ctx.font='bold 38px system-ui'; ctx.textAlign='center';
-wrapText(ctx,s.text,360,940,620,52);
-ctx.fillStyle='rgba(255,255,255,0.15)'; ctx.fillRect(0,0,720,1280);
-await new Promise(function(r){setTimeout(r,40);});
-if(Date.now()-start>15000) break;
+ctx.restore();
+// تدرج سينمائي + إطار
+let grad=ctx.createLinearGradient(0,700,0,1280); grad.addColorStop(0,'rgba(0,0,0,0)'); grad.addColorStop(1,'rgba(0,0,0,0.85)'); ctx.fillStyle=grad; ctx.fillRect(0,700,720,580);
+ctx.fillStyle='rgba(0,0,0,0.9)'; ctx.fillRect(0,0,720,60); ctx.fillRect(0,1220,720,60);
+if(effect==='epic'){ ctx.fillStyle='rgba(255,220,100,'+(0.08+Math.sin(elapsed/200)*0.05)+')'; ctx.fillRect(0,0,720,1280); }
+if(effect==='horror'){ ctx.fillStyle='rgba(0,0,0,0.35)'; ctx.fillRect(0,0,720,1280); }
+// نص يطلع كلمة كلمة
+let words=s.text.split(' ');
+let shownWords=Math.floor(words.length * Math.min(1, elapsed/ (s.text.length*45) ));
+let shownText=words.slice(0, Math.max(1, shownWords)).join(' ');
+ctx.fillStyle='white'; ctx.font='bold 36px system-ui'; ctx.textAlign='center';
+wrapText(ctx, shownText, 360, 950, 620, 50);
+// شريط تقدم
+ctx.fillStyle='rgba(255,255,255,0.2)'; ctx.fillRect(40,1180,640,6);
+ctx.fillStyle='#ec4899'; ctx.fillRect(40,1180,640*p,6);
+await new Promise(r=>setTimeout(r,40));
+if(Date.now()-start>30000) break;
 }
-await new Promise(function(r){setTimeout(r,400);});
+await new Promise(r=>setTimeout(r,600));
 }
-rec.stop(); document.getElementById('status').innerText='جاري تجهيز الملف...';
+rec.stop();
 }
 </script>
 </body>
