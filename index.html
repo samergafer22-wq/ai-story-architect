@@ -3,64 +3,97 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>مصنع الفيديو</title>
+<title>ستوديو المونتاج</title>
 <script src="https://cdn.tailwindcss.com"></script>
 <style>
-body{font-family:system-ui;background:#0f0f0f;color:white}
-.scene-img{width:100%;height:180px;object-fit:cover;border-radius:12px}
+body{font-family:system-ui;background:#0b0b0f;color:white}
+.thumb{width:100%;height:110px;object-fit:cover;border-radius:10px}
 </style>
 </head>
-<body class="p-4 max-w-md mx-auto">
-<h1 class="text-2xl font-black text-center">مصنع الفيديو</h1>
-<p class="text-center text-zinc-400 text-sm mb-4">فكرة - صور - صوت - فيديو جاهز لتيك توك</p>
+<body class="p-4 max-w-2xl mx-auto">
+<h1 class="text-2xl font-black text-center">ستوديو المونتاج الاحترافي</h1>
+<p class="text-center text-zinc-400 text-sm mb-4">ارفع صورك - اكتب سيناريو - اصنع فيديو تيك توك</p>
 
-<input id="idea" placeholder="اكتب فكرتك هنا" class="w-full p-3 rounded-xl bg-zinc-800 outline-none mb-3">
-<button onclick="generate()" class="w-full bg-pink-600 p-3 rounded-xl font-bold">1. ولد الصور والسيناريو</button>
+<div class="bg-zinc-900 p-4 rounded-2xl">
+<p class="font-bold mb-2">1. ارفع 8 صور من جوالك</p>
+<input type="file" id="files" multiple accept="image/*" class="w-full bg-zinc-800 p-2 rounded-xl">
+<div id="gallery" class="grid grid-cols-4 gap-2 mt-3"></div>
+<p id="imgCount" class="text-xs text-yellow-300 mt-2">لسه ما رفعت صور</p>
+</div>
 
-<div id="scenes" class="mt-4 space-y-3"></div>
+<div class="bg-zinc-900 p-4 rounded-2xl mt-3">
+<p class="font-bold mb-2">2. اكتب السيناريو الكامل</p>
+<textarea id="script" rows="6" placeholder="اكتب قصتك هنا كاملة... مثلا: في يوم عادي..." class="w-full bg-zinc-800 p-3 rounded-xl outline-none text-sm"></textarea>
+<button onclick="splitScript()" class="w-full bg-pink-600 p-3 rounded-xl font-bold mt-2">وزع السيناريو على المشاهد</button>
+</div>
 
-<div class="mt-4 bg-zinc-900 p-3 rounded-xl">
-<label>سرعة الصوت:</label>
+<div id="scenes" class="mt-3 space-y-3"></div>
+
+<div class="bg-zinc-900 p-4 rounded-2xl mt-3">
+<p class="font-bold">3. التصدير</p>
+<label class="text-sm">مدة كل مشهد (ثانية):</label>
+<input id="dur" type="number" value="4" min="2" max="12" class="w-full bg-zinc-800 p-2 rounded-lg mt-1">
+<label class="text-sm block mt-2">سرعة الصوت:</label>
 <select id="voiceSpeed" class="w-full bg-zinc-800 p-2 rounded-lg mt-1">
 <option value="1">عادي</option>
-<option value="0.9">درامي بطيء</option>
-<option value="1.15">سريع حماسي</option>
+<option value="0.9">درامي</option>
+<option value="1.15">حماسي</option>
 </select>
-<button onclick="makeVideo()" class="w-full bg-green-500 text-black p-3 rounded-xl font-black mt-3">2. اصنع الفيديو وحمله</button>
+<button onclick="makeVideo()" class="w-full bg-green-500 text-black p-3 rounded-xl font-black mt-3">اصنع الفيديو وحمله</button>
 <p id="status" class="text-center text-xs mt-2 text-yellow-300"></p>
 </div>
 
-<canvas id="canvas" width="720" height="1280" class="w-full rounded-xl mt-4 bg-black"></canvas>
+<canvas id="canvas" width="720" height="1280" class="w-full rounded-2xl mt-4 bg-black"></canvas>
 <video id="preview" controls class="w-full mt-3 rounded-xl hidden"></video>
 <a id="download" class="hidden block text-center bg-white text-black p-3 rounded-xl font-bold mt-2">تحميل الفيديو</a>
 
 <script>
+let images = [];
 let scenesData = [];
-function generate(){
-let idea = document.getElementById('idea').value || "قصة غامضة";
-let templates = [
-"في يوم عادي، " + idea + " .. وما كان يدري وش بيصير",
-"فجأة صار شي غريب، قلبه بدأ يدق بسرعة",
-"حاول يفهم وش قاعد يصير، بس كل شي كان اغرب",
-"قرر يكمل، رغم الخوف اللي فيه",
-"وهنا كانت الصدمة الكبيرة اللي ما توقعها",
-"بدأت الحقيقة تطلع شوي شوي قدامه",
-"وفي النهاية، فهم كل شي. اكتب رأيك في التعليقات"
-];
-scenesData = templates.map(function(t,i){
-return {text:t, img:"https://image.pollinations.ai/prompt/cinematic vertical 9:16 dark moody tiktok story scene " + (i+1) + " " + encodeURIComponent(idea) + "?seed=" + (Date.now()+i) + "&width=720&height=1280&nologo=true"};
+
+document.getElementById('files').addEventListener('change', function(e){
+let files = Array.from(e.target.files).slice(0,8);
+images = [];
+document.getElementById('gallery').innerHTML = '';
+files.forEach(function(f, idx){
+let reader = new FileReader();
+reader.onload = function(ev){
+images[idx] = ev.target.result;
+document.getElementById('gallery').innerHTML += '<img src="'+ev.target.result+'" class="thumb">';
+document.getElementById('imgCount').innerText = 'تم رفع ' + images.filter(Boolean).length + ' / 8 صور';
+};
+reader.readAsDataURL(f);
 });
-document.getElementById('scenes').innerHTML = scenesData.map(function(s,i){
-return '<div class="bg-zinc-900 p-2 rounded-xl"><img src="' + s.img + '" class="scene-img"><textarea oninput="scenesData[' + i + '].text=this.value" class="w-full bg-zinc-800 p-2 rounded-lg mt-2 text-sm">' + s.text + '</textarea><p class="text-xs text-zinc-500">المشهد ' + (i+1) + ' / 7</p></div>';
-}).join('');
-document.getElementById('status').innerText = "تم! عدل أي نص تبغاه، بعدين اضغط اصنع الفيديو";
+});
+
+function splitScript(){
+let full = document.getElementById('script').value.trim();
+if(!full){ alert('اكتب السيناريو أولا'); return; }
+if(images.length === 0){ alert('ارفع الصور أولا'); return; }
+let parts = full.split(/[.!؟\n]+/).filter(function(s){ return s.trim().length > 3; });
+while(parts.length < images.length){
+parts.push(parts[parts.length-1] || 'تابع القصة...');
 }
+scenesData = images.map(function(img, i){
+return {img: img, text: parts[i] ? parts[i].trim() : 'المشهد ' + (i+1)};
+});
+renderScenes();
+document.getElementById('status').innerText = 'تم التوزيع! عدل أي نص تبغاه';
+}
+
+function renderScenes(){
+document.getElementById('scenes').innerHTML = scenesData.map(function(s,i){
+return '<div class="bg-zinc-900 p-3 rounded-2xl"><img src="'+s.img+'" class="thumb"><textarea oninput="scenesData['+i+'].text=this.value" class="w-full bg-zinc-800 p-2 rounded-lg mt-2 text-sm">'+s.text+'</textarea><p class="text-xs text-zinc-500">المشهد '+(i+1)+' - صورته فوق</p></div>';
+}).join('');
+}
+
 async function makeVideo(){
-if(!scenesData.length){ alert('ولد المشاهد أولا'); return; }
+if(!scenesData.length){ alert('وزع السيناريو أولا'); return; }
 let canvas = document.getElementById('canvas');
 let ctx = canvas.getContext('2d');
 let stream = canvas.captureStream(30);
-let rec = new MediaRecorder(stream, {mimeType:'video/webm'});
+let mime = MediaRecorder.isTypeSupported('video/webm;codecs=vp9') ? 'video/webm;codecs=vp9' : 'video/webm';
+let rec = new MediaRecorder(stream, {mimeType: mime});
 let chunks = [];
 rec.ondataavailable = function(e){ if(e.data.size>0) chunks.push(e.data); };
 rec.onstop = function(){
@@ -69,30 +102,37 @@ let url = URL.createObjectURL(blob);
 let v = document.getElementById('preview');
 v.src = url; v.classList.remove('hidden');
 let d = document.getElementById('download');
-d.href = url; d.download = 'tiktok-video.webm'; d.classList.remove('hidden');
-document.getElementById('status').innerText = "تم! حمل الفيديو وارفعه تيك توك";
+d.href = url; d.download = 'montage-video.webm'; d.classList.remove('hidden');
+document.getElementById('status').innerText = 'تم! حمل الفيديو وارفعه تيك توك';
 };
 rec.start();
+let dur = parseFloat(document.getElementById('dur').value) || 4;
 for(let s of scenesData){
 let img = new Image();
-img.crossOrigin = "anonymous";
 img.src = s.img;
 await new Promise(function(r){ img.onload = r; img.onerror = r; });
-ctx.fillStyle = "black"; ctx.fillRect(0,0,720,1280);
-try{ ctx.drawImage(img,0,0,720,1280); }catch(e){}
-ctx.fillStyle = "rgba(0,0,0,0.6)"; ctx.fillRect(0,850,720,430);
-ctx.fillStyle = "white"; ctx.font = "bold 38px system-ui"; ctx.textAlign = "center";
-wrapText(ctx, s.text, 360, 920, 620, 52);
-await speak(s.text);
-await new Promise(function(r){ setTimeout(r,300); });
+let start = Date.now();
+let speakP = speak(s.text);
+while(Date.now() - start < dur*1000){
+let p = (Date.now() - start) / (dur*1000);
+let zoom = 1 + p * 0.15;
+let w = 720 * zoom, h = 1280 * zoom;
+ctx.fillStyle = 'black'; ctx.fillRect(0,0,720,1280);
+try{ ctx.drawImage(img, -(w-720)/2, -(h-1280)/2, w, h); }catch(e){}
+ctx.fillStyle = 'rgba(0,0,0,0.55)'; ctx.fillRect(0,900,720,380);
+ctx.fillStyle = 'white'; ctx.font = 'bold 36px system-ui'; ctx.textAlign = 'center';
+wrapText(ctx, s.text, 360, 950, 620, 50);
+await new Promise(function(r){ setTimeout(r, 50); });
+}
+await speakP;
 }
 rec.stop();
-document.getElementById('status').innerText = "جاري تجهيز الفيديو...";
+document.getElementById('status').innerText = 'جاري تجهيز الفيديو...';
 }
+
 function wrapText(ctx,text,x,y,maxW,lineH){
 let words = text.split(' ');
-let line = '';
-let lines = [];
+let line = ''; let lines = [];
 for(let w of words){
 let t = line + w + ' ';
 if(ctx.measureText(t).width > maxW){ lines.push(line); line = w + ' '; } else { line = t; }
@@ -100,14 +140,18 @@ if(ctx.measureText(t).width > maxW){ lines.push(line); line = w + ' '; } else { 
 lines.push(line);
 lines.forEach(function(l,i){ ctx.fillText(l, x, y + i*lineH); });
 }
+
 function speak(text){
 return new Promise(function(res){
+try{
+speechSynthesis.cancel();
 let u = new SpeechSynthesisUtterance(text);
 u.lang = 'ar-SA';
 u.rate = parseFloat(document.getElementById('voiceSpeed').value);
 u.onend = res; u.onerror = res;
 speechSynthesis.speak(u);
-setTimeout(res, 8000);
+setTimeout(res, 6000);
+}catch(e){ res(); }
 });
 }
 </script>
