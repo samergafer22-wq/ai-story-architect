@@ -1,12 +1,115 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="ar" dir="rtl">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>استوديو سامر - TikTok</title>
-  </head>
-  <body>
-    <div id="root"></div>
-    <script type="module" src="/src/main.tsx"></script>
-  </body>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>مصنع الفيديو</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<style>
+body{font-family:system-ui;background:#0f0f0f;color:white}
+.scene-img{width:100%;height:180px;object-fit:cover;border-radius:12px}
+</style>
+</head>
+<body class="p-4 max-w-md mx-auto">
+<h1 class="text-2xl font-black text-center">مصنع الفيديو</h1>
+<p class="text-center text-zinc-400 text-sm mb-4">فكرة - صور - صوت - فيديو جاهز لتيك توك</p>
+
+<input id="idea" placeholder="اكتب فكرتك هنا" class="w-full p-3 rounded-xl bg-zinc-800 outline-none mb-3">
+<button onclick="generate()" class="w-full bg-pink-600 p-3 rounded-xl font-bold">1. ولد الصور والسيناريو</button>
+
+<div id="scenes" class="mt-4 space-y-3"></div>
+
+<div class="mt-4 bg-zinc-900 p-3 rounded-xl">
+<label>سرعة الصوت:</label>
+<select id="voiceSpeed" class="w-full bg-zinc-800 p-2 rounded-lg mt-1">
+<option value="1">عادي</option>
+<option value="0.9">درامي بطيء</option>
+<option value="1.15">سريع حماسي</option>
+</select>
+<button onclick="makeVideo()" class="w-full bg-green-500 text-black p-3 rounded-xl font-black mt-3">2. اصنع الفيديو وحمله</button>
+<p id="status" class="text-center text-xs mt-2 text-yellow-300"></p>
+</div>
+
+<canvas id="canvas" width="720" height="1280" class="w-full rounded-xl mt-4 bg-black"></canvas>
+<video id="preview" controls class="w-full mt-3 rounded-xl hidden"></video>
+<a id="download" class="hidden block text-center bg-white text-black p-3 rounded-xl font-bold mt-2">تحميل الفيديو</a>
+
+<script>
+let scenesData = [];
+function generate(){
+let idea = document.getElementById('idea').value || "قصة غامضة";
+let templates = [
+"في يوم عادي، " + idea + " .. وما كان يدري وش بيصير",
+"فجأة صار شي غريب، قلبه بدأ يدق بسرعة",
+"حاول يفهم وش قاعد يصير، بس كل شي كان اغرب",
+"قرر يكمل، رغم الخوف اللي فيه",
+"وهنا كانت الصدمة الكبيرة اللي ما توقعها",
+"بدأت الحقيقة تطلع شوي شوي قدامه",
+"وفي النهاية، فهم كل شي. اكتب رأيك في التعليقات"
+];
+scenesData = templates.map(function(t,i){
+return {text:t, img:"https://image.pollinations.ai/prompt/cinematic vertical 9:16 dark moody tiktok story scene " + (i+1) + " " + encodeURIComponent(idea) + "?seed=" + (Date.now()+i) + "&width=720&height=1280&nologo=true"};
+});
+document.getElementById('scenes').innerHTML = scenesData.map(function(s,i){
+return '<div class="bg-zinc-900 p-2 rounded-xl"><img src="' + s.img + '" class="scene-img"><textarea oninput="scenesData[' + i + '].text=this.value" class="w-full bg-zinc-800 p-2 rounded-lg mt-2 text-sm">' + s.text + '</textarea><p class="text-xs text-zinc-500">المشهد ' + (i+1) + ' / 7</p></div>';
+}).join('');
+document.getElementById('status').innerText = "تم! عدل أي نص تبغاه، بعدين اضغط اصنع الفيديو";
+}
+async function makeVideo(){
+if(!scenesData.length){ alert('ولد المشاهد أولا'); return; }
+let canvas = document.getElementById('canvas');
+let ctx = canvas.getContext('2d');
+let stream = canvas.captureStream(30);
+let rec = new MediaRecorder(stream, {mimeType:'video/webm'});
+let chunks = [];
+rec.ondataavailable = function(e){ if(e.data.size>0) chunks.push(e.data); };
+rec.onstop = function(){
+let blob = new Blob(chunks, {type:'video/webm'});
+let url = URL.createObjectURL(blob);
+let v = document.getElementById('preview');
+v.src = url; v.classList.remove('hidden');
+let d = document.getElementById('download');
+d.href = url; d.download = 'tiktok-video.webm'; d.classList.remove('hidden');
+document.getElementById('status').innerText = "تم! حمل الفيديو وارفعه تيك توك";
+};
+rec.start();
+for(let s of scenesData){
+let img = new Image();
+img.crossOrigin = "anonymous";
+img.src = s.img;
+await new Promise(function(r){ img.onload = r; img.onerror = r; });
+ctx.fillStyle = "black"; ctx.fillRect(0,0,720,1280);
+try{ ctx.drawImage(img,0,0,720,1280); }catch(e){}
+ctx.fillStyle = "rgba(0,0,0,0.6)"; ctx.fillRect(0,850,720,430);
+ctx.fillStyle = "white"; ctx.font = "bold 38px system-ui"; ctx.textAlign = "center";
+wrapText(ctx, s.text, 360, 920, 620, 52);
+await speak(s.text);
+await new Promise(function(r){ setTimeout(r,300); });
+}
+rec.stop();
+document.getElementById('status').innerText = "جاري تجهيز الفيديو...";
+}
+function wrapText(ctx,text,x,y,maxW,lineH){
+let words = text.split(' ');
+let line = '';
+let lines = [];
+for(let w of words){
+let t = line + w + ' ';
+if(ctx.measureText(t).width > maxW){ lines.push(line); line = w + ' '; } else { line = t; }
+}
+lines.push(line);
+lines.forEach(function(l,i){ ctx.fillText(l, x, y + i*lineH); });
+}
+function speak(text){
+return new Promise(function(res){
+let u = new SpeechSynthesisUtterance(text);
+u.lang = 'ar-SA';
+u.rate = parseFloat(document.getElementById('voiceSpeed').value);
+u.onend = res; u.onerror = res;
+speechSynthesis.speak(u);
+setTimeout(res, 8000);
+});
+}
+</script>
+</body>
 </html>
