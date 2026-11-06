@@ -1,0 +1,6 @@
+{
+  "name": "نواة AI ستوديو | ربط 70 أداة لإنشاء فيديو تيك توك",
+  "description": "منصة إنتاج فيديو متكاملة تربط أكثر من 70 أداة ذكاء اصطناعي بتسلسل ترحيلي لإنشاء فيديوهات تيك توك 9:16 احترافية مع قصص ومؤثرات صوتية وتصدير فوري.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
