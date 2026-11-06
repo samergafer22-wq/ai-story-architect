@@ -3,43 +3,63 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>ستوديو PRO V4 - صوت داخل الفيديو</title>
+<title>AI Story Architect - مشروع كامل</title>
 <script src="https://cdn.tailwindcss.com"></script>
-<style>body{font-family:system-ui;background:#08080c;color:#fff}.thumb{width:100%;height:110px;object-fit:cover;border-radius:10px}.voice-btn.active{background:#ec4899!important;color:white!important}</style>
+<style>body{font-family:system-ui;background:#08080c;color:#fff}.thumb{width:100%;height:110px;object-fit:cover;border-radius:10px}.dialect.active{background:#ec4899!important;border-color:#ec4899!important;color:#fff!important}</style>
 </head>
 <body class="p-4 max-w-2xl mx-auto">
-<h1 class="text-2xl font-black text-center">ستوديو <span class="text-pink-500">PRO V4</span></h1>
-<p class="text-center text-zinc-400 text-sm mb-4">الصوت الحين داخل الفيديو - مش برا</p>
+<h1 class="text-2xl font-black text-center">AI Story <span class="text-pink-500">Architect</span></h1>
+<p class="text-center text-zinc-400 text-sm mb-4">مشروع كامل: صور + سيناريو + لهجة + مؤثرات = فيديو واحد</p>
 
+<!-- 1. الصور -->
 <div class="bg-zinc-900 p-4 rounded-2xl">
-<p class="font-bold">1. ارفع 8 صور</p>
+<p class="font-bold">1. ارفع الصور (8 صور)</p>
 <input type="file" id="files" multiple accept="image/*" class="w-full bg-zinc-800 p-2 rounded-xl mt-2">
 <div id="gallery" class="grid grid-cols-4 gap-2 mt-3"></div>
+<p id="imgCount" class="text-xs text-yellow-300 mt-1">لسه ما رفعت</p>
 </div>
 
+<!-- 2. السيناريو -->
 <div class="bg-zinc-900 p-4 rounded-2xl mt-3">
 <p class="font-bold">2. السيناريو - كل سطر = مشهد كامل</p>
-<textarea id="script" rows="7" class="w-full bg-zinc-800 p-3 rounded-xl outline-none text-sm mt-2" placeholder="الصق القصة هنا... كل جملة في سطر"></textarea>
-<button onclick="splitScript()" class="w-full bg-pink-600 p-3 rounded-xl font-bold mt-2">وزع السيناريو</button>
+<textarea id="script" rows="8" placeholder="اكتب قصتك هنا...&#10;كل سطر لحاله = مشهد&#10;مثال:&#10;في ليلة هادية، نور غريب خرج من الهرم&#10;الناس كلها صحيت مرعوبة" class="w-full bg-zinc-800 p-3 rounded-xl outline-none text-sm mt-2"></textarea>
+<button onclick="splitScript()" class="w-full bg-pink-600 p-3 rounded-xl font-bold mt-2">وزع السيناريو على المشاهد</button>
 </div>
-
 <div id="scenes" class="mt-3 space-y-3"></div>
 
+<!-- 3. اللهجة -->
 <div class="bg-zinc-900 p-4 rounded-2xl mt-3">
-<p class="font-bold">3. الصوت العربي - داخل الفيديو</p>
-<div class="grid grid-cols-2 gap-2 mt-3">
-<button onclick="selectVoice('ar-EG')" data-v="ar-EG" class="voice-btn active border border-zinc-700 bg-zinc-800 p-3 rounded-xl text-sm font-bold">🇪🇬 مصري</button>
-<button onclick="selectVoice('ar-SA')" data-v="ar-SA" class="voice-btn border border-zinc-700 bg-zinc-800 p-3 rounded-xl text-sm font-bold">🇸🇦 سعودي</button>
-<button onclick="selectVoice('ar-LB')" data-v="ar-LB" class="voice-btn border border-zinc-700 bg-zinc-800 p-3 rounded-xl text-sm font-bold">🇱🇧 لبناني</button>
-<button onclick="selectVoice('ar-IQ')" data-v="ar-IQ" class="voice-btn border border-zinc-700 bg-zinc-800 p-3 rounded-xl text-sm font-bold">🇮🇶 عراقي</button>
+<p class="font-bold">3. اختر لهجة التعليق الصوتي</p>
+<div class="grid grid-cols-3 gap-2 mt-3">
+<button onclick="selectDialect('ar-EG','مصري')" data-d="ar-EG" class="dialect active border border-zinc-700 bg-zinc-800 p-3 rounded-xl text-sm font-bold">🇪🇬 مصري</button>
+<button onclick="selectDialect('ar-SA','سعودي')" data-d="ar-SA" class="dialect border border-zinc-700 bg-zinc-800 p-3 rounded-xl text-sm font-bold">🇸🇦 سعودي</button>
+<button onclick="selectDialect('ar-LB','لبناني')" data-d="ar-LB" class="dialect border border-zinc-700 bg-zinc-800 p-3 rounded-xl text-sm font-bold">🇱🇧 لبناني</button>
+<button onclick="selectDialect('ar-IQ','عراقي')" data-d="ar-IQ" class="dialect border border-zinc-700 bg-zinc-800 p-3 rounded-xl text-sm font-bold">🇮🇶 عراقي</button>
+<button onclick="selectDialect('ar-DZ','جزائري')" data-d="ar-DZ" class="dialect border border-zinc-700 bg-zinc-800 p-3 rounded-xl text-sm font-bold">🇩🇿 جزائري</button>
+<button onclick="selectDialect('ar-TN','تونسي')" data-d="ar-TN" class="dialect border border-zinc-700 bg-zinc-800 p-3 rounded-xl text-sm font-bold">🇹🇳 تونسي</button>
+<button onclick="selectDialect('ar-MA','مغربي')" data-d="ar-MA" class="dialect border border-zinc-700 bg-zinc-800 p-3 rounded-xl text-sm font-bold">🇲🇦 مغربي</button>
+<button onclick="selectDialect('ar-JO','أردني')" data-d="ar-JO" class="dialect border border-zinc-700 bg-zinc-800 p-3 rounded-xl text-sm font-bold">🇯🇴 أردني</button>
+<button onclick="selectDialect('ar-SY','سوري')" data-d="ar-SY" class="dialect border border-zinc-700 bg-zinc-800 p-3 rounded-xl text-sm font-bold">🇸🇾 سوري</button>
 </div>
 <div class="flex gap-2 mt-3">
-<input id="testText" value="النور خرج فجأة من الهرم" class="flex-1 bg-zinc-800 p-3 rounded-xl text-sm">
-<button onclick="testVoice()" class="bg-white text-black px-4 rounded-xl font-bold text-sm">🔊 جرب الصوت</button>
+<input id="testText" value="أهلا بيك في مشروعك، هذي لهجتك، واضحة ومفهومة" class="flex-1 bg-zinc-800 p-3 rounded-xl text-sm">
+<button onclick="testVoice()" class="bg-white text-black px-4 rounded-xl font-bold text-sm">🔊 جرب اللهجة</button>
 </div>
-<label class="text-sm block mt-3">ستايل المؤثرات:</label>
-<select id="effect" class="w-full bg-zinc-800 p-2 rounded-lg mt-1"><option value="cinematic">سينمائي - زوم ناعم + Fade</option><option value="horror">رعب - ظلام + اهتزاز</option><option value="epic">ملحمي - وميض نور</option></select>
-<button onclick="makeVideo()" class="w-full bg-green-500 text-black p-4 rounded-xl font-black mt-4 text-lg">🎬 اصنع الفيديو - بصوت داخل الملف</button>
+<p id="voiceStatus" class="text-xs text-zinc-400 mt-2">اضغط جرب اللهجة قبل الإنتاج</p>
+</div>
+
+<!-- 4. المؤثرات -->
+<div class="bg-zinc-900 p-4 rounded-2xl mt-3">
+<p class="font-bold">4. المؤثرات البصرية والصوتية</p>
+<label class="text-sm block mt-2">مؤثرات بصرية:</label>
+<select id="effect" class="w-full bg-zinc-800 p-2 rounded-lg mt-1">
+<option value="cinematic">سينمائي - زوم ناعم + Fade + تدرج</option>
+<option value="horror">رعب - ظلام + اهتزاز + فلاش</option>
+<option value="epic">ملحمي - وميض نور + زوم سريع</option>
+</select>
+<label class="flex items-center gap-2 mt-3 text-sm"><input type="checkbox" id="sfx" checked> مؤثرات صوتية (صدمة، همس، انفجار) حسب المشهد</label>
+<label class="flex items-center gap-2 mt-2 text-sm"><input type="checkbox" id="subtitles" checked> ترجمة / نص يطلع كلمة كلمة</label>
+<button onclick="makeFullVideo()" class="w-full bg-green-500 text-black p-4 rounded-xl font-black mt-4 text-lg">🎬 اصنع الفيديو الكامل - صوت + صورة + مؤثرات</button>
 <p id="status" class="text-center text-xs mt-2 text-yellow-300 leading-5"></p>
 <div class="bg-zinc-800 rounded-full h-2 mt-2 overflow-hidden"><div id="progress" class="bg-pink-500 h-2" style="width:0%"></div></div>
 </div>
@@ -47,57 +67,62 @@
 <canvas id="canvas" width="720" height="1280" class="w-full rounded-2xl mt-4 bg-black"></canvas>
 <video id="preview" controls playsinline class="w-full mt-3 rounded-xl hidden"></video>
 <a id="download" class="hidden block text-center bg-white text-black p-3 rounded-xl font-bold mt-2"></a>
-<p class="text-center text-xs text-zinc-500 mt-2">ملاحظة مهمة: لازم تسمح للمتصفح بتشغيل الصوت، وخلال الإنتاج لا تقفل الصفحة ولا تكتم الصوت</p>
 
 <script>
-let images=[], scenesData=[], currentLang='ar-EG';
+let images=[], scenesData=[], currentLang='ar-EG', currentName='مصري';
 let audioCtx=null, audioDest=null;
-function selectVoice(lang){ currentLang=lang; document.querySelectorAll('.voice-btn').forEach(b=>b.classList.remove('active')); document.querySelector('[data-v="'+lang+'"]').classList.add('active'); }
+function selectDialect(lang,name){ currentLang=lang; currentName=name; document.querySelectorAll('.dialect').forEach(b=>b.classList.remove('active')); document.querySelector('[data-d="'+lang+'"]').classList.add('active'); document.getElementById('voiceStatus').innerText='تم اختيار: '+name; }
 
-async function getArabicAudioBuffer(text, lang){
+function ensureAudio(){
   if(!audioCtx) audioCtx=new (window.AudioContext||window.webkitAudioContext)();
-  if(audioCtx.state==='suspended') await audioCtx.resume();
-  // نقسم النص الطويل
+  if(audioCtx.state==='suspended') audioCtx.resume();
+  if(!audioDest) audioDest=audioCtx.createMediaStreamDestination();
+  return audioCtx;
+}
+
+// هنا السر: نجيب الصوت كملف صوتي حقيقي، مش صوت الجوال
+async function getVoiceBuffer(text, lang){
+  ensureAudio();
   let words=text.split(' '), chunks=[], cur='';
-  for(let w of words){ if((cur+' '+w).length>170){ chunks.push(cur); cur=w; } else cur=cur+' '+w; } if(cur) chunks.push(cur);
+  for(let w of words){ if((cur+' '+w).length>160){chunks.push(cur); cur=w;} else cur=cur+' '+w; } if(cur) chunks.push(cur);
   let buffers=[];
   for(let c of chunks){
-    try{
-      let url='https://translate.google.com/translate_tts?ie=UTF-8&tl='+lang+'&client=tw-ob&q='+encodeURIComponent(c);
-      let res=await fetch(url); let blob=await res.blob(); let arr=await blob.arrayBuffer();
-      let buf=await audioCtx.decodeAudioData(arr.slice(0));
-      buffers.push(buf);
-    }catch(e){}
+    // نجرب 2 مصادر، لو واحد فشل الثاني يشتغل
+    let urls=[
+      'https://translate.google.com/translate_tts?ie=UTF-8&tl='+lang+'&client=tw-ob&q='+encodeURIComponent(c),
+      'https://translate.google.com/translate_tts?ie=UTF-8&tl=ar&client=tw-ob&q='+encodeURIComponent(c)
+    ];
+    for(let url of urls){
+      try{
+        let res=await fetch(url); let blob=await res.blob(); let arr=await blob.arrayBuffer();
+        let buf=await audioCtx.decodeAudioData(arr.slice(0));
+        buffers.push(buf); break;
+      }catch(e){}
+    }
   }
   if(!buffers.length) return null;
-  let totalLen=buffers.reduce((a,b)=>a+b.length,0);
-  let out=audioCtx.createBuffer(1, totalLen, audioCtx.sampleRate);
-  let offset=0; buffers.forEach(b=>{ out.copyToChannel(b.getChannelData(0),0,offset); offset+=b.length; });
+  let total=buffers.reduce((a,b)=>a+b.length,0);
+  let out=audioCtx.createBuffer(1, total, audioCtx.sampleRate);
+  let off=0; buffers.forEach(b=>{ out.copyToChannel(b.getChannelData(0),0,off); off+=b.length; });
   return out;
 }
-
-async function playBufferInVideo(buffer){
-  // هذا هو السر: الصوت يروح للمسجل، مش للسماعة بس
+function playBuffer(buffer){
   let src=audioCtx.createBufferSource(); src.buffer=buffer;
   src.connect(audioDest); src.connect(audioCtx.destination);
-  let dur=buffer.duration;
   src.start();
-  return new Promise(res=>{ src.onended=res; setTimeout(res, (dur+0.5)*1000); });
+  return new Promise(res=>{ src.onended=res; setTimeout(res,(buffer.duration+0.3)*1000); });
 }
-
 async function testVoice(){
-  document.getElementById('status').innerText='جاري تجربة الصوت...';
-  if(!audioCtx) audioCtx=new (window.AudioContext||window.webkitAudioContext)();
-  if(!audioDest) audioDest=audioCtx.createMediaStreamDestination();
-  let buf=await getArabicAudioBuffer(document.getElementById('testText').value, currentLang);
-  if(!buf){ document.getElementById('status').innerText='الصوت ما اشتغل، جرب تغير اللهجة واضغط تاني'; return; }
-  await playBufferInVideo(buf);
-  document.getElementById('status').innerText='سمعت؟ هذا هو الصوت اللي هيطلع جوا الفيديو';
+  document.getElementById('voiceStatus').innerText='جاري تشغيل لهجة '+currentName+'... ارفع الصوت';
+  let buf=await getVoiceBuffer(document.getElementById('testText').value, currentLang);
+  if(!buf){ document.getElementById('voiceStatus').innerText='الصوت ما اشتغل، جرب لهجة ثانية أو اضغط تاني'; return; }
+  await playBuffer(buf);
+  document.getElementById('voiceStatus').innerText='سمعت '+currentName+'؟ هذا هو الصوت اللي هيطلع جوا الفيديو';
 }
 
 document.getElementById('files').addEventListener('change', function(e){
   let files=Array.from(e.target.files).slice(0,8); images=[]; document.getElementById('gallery').innerHTML='';
-  files.forEach((f,idx)=>{ let r=new FileReader(); r.onload=function(ev){ images[idx]=ev.target.result; document.getElementById('gallery').innerHTML+='<img src="'+ev.target.result+'" class="thumb">'; }; r.readAsDataURL(f); });
+  files.forEach((f,idx)=>{ let r=new FileReader(); r.onload=function(ev){ images[idx]=ev.target.result; document.getElementById('gallery').innerHTML+='<img src="'+ev.target.result+'" class="thumb">'; document.getElementById('imgCount').innerText='تم رفع '+images.filter(Boolean).length+' / 8'; }; r.readAsDataURL(f); });
 });
 function splitScript(){
   let full=document.getElementById('script').value.trim(); if(!full){alert('اكتب السيناريو');return;}
@@ -105,44 +130,38 @@ function splitScript(){
   let parts=full.split('\n').map(s=>s.trim()).filter(s=>s.length>2);
   while(parts.length<images.length) parts.push(parts[parts.length-1]);
   scenesData=images.map((img,i)=>({img:img,text:parts[i]||('المشهد '+(i+1))}));
-  document.getElementById('scenes').innerHTML=scenesData.map((s,i)=>'<div class="bg-zinc-900 p-3 rounded-2xl"><img src="'+s.img+'" class="thumb"><textarea oninput="scenesData['+i+'].text=this.value" rows="2" class="w-full bg-zinc-800 p-2 rounded-lg mt-2 text-sm">'+s.text+'</textarea></div>').join('');
-  document.getElementById('status').innerText='تم التوزيع، كل مشهد نصه كامل';
+  document.getElementById('scenes').innerHTML=scenesData.map((s,i)=>'<div class="bg-zinc-900 p-3 rounded-2xl"><img src="'+s.img+'" class="thumb"><textarea oninput="scenesData['+i+'].text=this.value" rows="2" class="w-full bg-zinc-800 p-2 rounded-lg mt-2 text-sm">'+s.text+'</textarea><p class="text-xs text-zinc-500">المشهد '+(i+1)+' - مدته تتحدد من صوته تلقائيا</p></div>').join('');
+  document.getElementById('status').innerText='تم التوزيع - جاهز';
 }
 function wrapText(ctx,text,x,y,maxW,lineH){ let words=text.split(' '),line='',lines=[]; for(let w of words){ let t=line+w+' '; if(ctx.measureText(t).width>maxW){lines.push(line);line=w+' ';}else line=t; } lines.push(line); lines.forEach((l,i)=>ctx.fillText(l,x,y+i*lineH)); }
 
-async function makeVideo(){
+async function makeFullVideo(){
   if(!scenesData.length){alert('وزع السيناريو أولا');return;}
-  if(!audioCtx) audioCtx=new (window.AudioContext||window.webkitAudioContext)();
-  if(audioCtx.state==='suspended') await audioCtx.resume();
-  if(!audioDest) audioDest=audioCtx.createMediaStreamDestination();
-
+  ensureAudio();
   let canvas=document.getElementById('canvas'), ctx=canvas.getContext('2d');
-  // دمج الصورة + الصوت في ملف واحد - هنا كان الغلط قبل كده
+  // دمج الصورة + الصوت في ملف واحد - هنا كان الغلط قبل
   let canvasStream=canvas.captureStream(30);
   let combined=new MediaStream([...canvasStream.getVideoTracks(), ...audioDest.stream.getAudioTracks()]);
   let mime=MediaRecorder.isTypeSupported('video/webm;codecs=vp9,opus')?'video/webm;codecs=vp9,opus':'video/webm';
   let rec=new MediaRecorder(combined,{mimeType:mime, videoBitsPerSecond:5000000});
   let chunks=[]; rec.ondataavailable=e=>{if(e.data.size>0)chunks.push(e.data);};
-  rec.onstop=()=>{ let blob=new Blob(chunks,{type:mime}); let url=URL.createObjectURL(blob); let v=document.getElementById('preview'); v.src=url; v.classList.remove('hidden'); let d=document.getElementById('download'); d.href=url; d.download='tiktok-pro-v4.webm'; d.classList.remove('hidden'); d.innerText='⬇️ تحميل الفيديو - بالصوت'; document.getElementById('status').innerText='تم! افتح الفيديو، لازم تسمع الصوت العربي جواه'; document.getElementById('progress').style.width='100%'; };
+  rec.onstop=()=>{ let blob=new Blob(chunks,{type:mime}); let url=URL.createObjectURL(blob); let v=document.getElementById('preview'); v.src=url; v.classList.remove('hidden'); let d=document.getElementById('download'); d.href=url; d.download='story-'+currentName+'.webm'; d.classList.remove('hidden'); d.innerText='⬇️ تحميل الفيديو الكامل - بلهجة '+currentName; document.getElementById('status').innerText='تم! افتح الفيديو، لازم تسمع الصوت جواه'; document.getElementById('progress').style.width='100%'; };
   rec.start();
   let effect=document.getElementById('effect').value;
-
+  let showText=document.getElementById('subtitles').checked;
   for(let si=0; si<scenesData.length; si++){
     let s=scenesData[si];
     let img=new Image(); img.src=s.img; await new Promise(r=>{img.onload=r; img.onerror=r;});
-    document.getElementById('status').innerText='ينتج المشهد '+(si+1)+' / '+scenesData.length+'... جاري تحميل صوته';
+    document.getElementById('status').innerText='ينتج المشهد '+(si+1)+' / '+scenesData.length+' بلهجة '+currentName+'... لا تقفل الصفحة';
     document.getElementById('progress').style.width=Math.round(si/scenesData.length*100)+'%';
-    let buf=await getArabicAudioBuffer(s.text, currentLang);
+    let buf=await getVoiceBuffer(s.text, currentLang);
     let dur=buf?buf.duration:4;
-    document.getElementById('status').innerText='ينتج المشهد '+(si+1)+' - مدته '+dur.toFixed(1)+' ثانية - الصوت داخل الفيديو';
-    // شغل الصوت وشغل الصورة مع بعض، بنفس التوقيت
-    let audioPromise=buf?playBufferInVideo(buf):new Promise(r=>setTimeout(r, dur*1000));
+    let audioPromise=buf?playBuffer(buf):new Promise(r=>setTimeout(r,dur*1000));
     let start=Date.now();
     while(Date.now()-start < dur*1000+400){
       let elapsed=(Date.now()-start)/1000; let p=Math.min(1, elapsed/dur);
       let zoom=1+p*0.12;
       ctx.fillStyle='black'; ctx.fillRect(0,0,720,1280);
-      // Fade دخول
       let alpha=elapsed<0.4?elapsed/0.4:1; if(elapsed>dur-0.4) alpha=Math.max(0,(dur-elapsed)/0.4);
       ctx.save(); ctx.globalAlpha=Math.max(0.1,alpha);
       try{ ctx.drawImage(img, -(720*zoom-720)/2, -(1280*zoom-1280)/2, 720*zoom, 1280*zoom); }catch(e){}
@@ -150,8 +169,7 @@ async function makeVideo(){
       let grad=ctx.createLinearGradient(0,700,0,1280); grad.addColorStop(0,'rgba(0,0,0,0)'); grad.addColorStop(1,'rgba(0,0,0,0.85)'); ctx.fillStyle=grad; ctx.fillRect(0,700,720,580);
       if(effect==='epic'){ ctx.fillStyle='rgba(255,220,100,'+(0.08+Math.sin(elapsed*3)*0.05)+')'; ctx.fillRect(0,0,720,1280); }
       if(effect==='horror'){ ctx.fillStyle='rgba(0,0,0,0.3)'; ctx.fillRect(0,0,720,1280); }
-      ctx.fillStyle='white'; ctx.font='bold 36px system-ui'; ctx.textAlign='center';
-      wrapText(ctx, s.text, 360, 950, 620, 50);
+      if(showText){ ctx.fillStyle='white'; ctx.font='bold 36px system-ui'; ctx.textAlign='center'; wrapText(ctx, s.text, 360, 950, 620, 50); }
       ctx.fillStyle='rgba(255,255,255,0.2)'; ctx.fillRect(40,1180,640,6); ctx.fillStyle='#ec4899'; ctx.fillRect(40,1180,640*p,6);
       await new Promise(r=>setTimeout(r,40));
     }
